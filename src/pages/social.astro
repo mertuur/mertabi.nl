@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { site } from "../data/site";
+---
+
+<Base
+  title={`Social media — ${site.name}`}
+  description="Alle officiële socialmediakanalen van Mertabi."
+>
+  <section class="page-intro">
+    <h1>Social media</h1>
+    <p>Kom gezellig meedoen. Dit zijn de officiële kanalen van Mertabi.</p>
+  </section>
+
+  <SocialLinks />
+</Base>

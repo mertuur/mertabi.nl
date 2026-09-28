@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import VideoEmbed from "../components/VideoEmbed.astro";
+import { site } from "../data/site";
+import { getLatestVideos } from "../lib/youtube";
+
+const videos = await getLatestVideos(3);
+---
+
+<Base title={`${site.name} — sketches`} description={site.tagline}>
+  <section class="page-intro">
+    <h1>Hé, leuk dat je er bent.</h1>
+    <p>De nieuwste sketches, vers van YouTube.</p>
+  </section>
+
+  {
+    videos.length ? (
+      <section class="video-stack" aria-label="Nieuwste sketches">
+        {videos.map((video) => (
+          <article class="video-card">
+            <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} />
+          </article>
+        ))}
+      </section>
+    ) : (
+      <p class="empty-state">
+        De video’s laden even niet. Kijk intussen op{" "}
+        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">
+          YouTube
+        </a>
+        .
+      </p>
+    )
+  }
+</Base>

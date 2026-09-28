@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { site } from "../data/site";
+---
+
+<Base
+  title={`Contact — ${site.name}`}
+  description="Mail Mertabi of kom langs op social media."
+>
+  <section class="page-intro">
+    <h1>Contact</h1>
+    <p>Zeg hallo. Mail is het snelst, maar een berichtje op socials mag ook.</p>
+  </section>
+
+  <section class="mail-block">
+    <h2>Mail</h2>
+    <a class="mail-link" href={`mailto:${site.email}`}>
+      {site.email}
+      <span>Stuur een mail</span>
+    </a>
+  </section>
+
+  <section class="mail-block">
+    <h2>Social media</h2>
+    <SocialLinks />
+  </section>
+</Base>

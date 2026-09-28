@@ -1,0 +1,25 @@
+export const site = {
+  name: "Mertabi",
+  url: "https://mertabi.nl",
+  email: "mail@mertabi.nl",
+  tagline: "Comedy sketches, vers van YouTube.",
+  youtube: {
+    handle: "mertabi",
+    channelId: "UCrVPdFrjQ4MJOAKmJX81IJg",
+    url: "https://www.youtube.com/@mertabi",
+  },
+  nav: [
+    { href: "/", label: "Home" },
+    { href: "/videos", label: "Video's" },
+    { href: "/social", label: "Social media" },
+    { href: "/contact", label: "Contact" },
+  ],
+  socials: [
+    { name: "YouTube", url: "https://www.youtube.com/@mertabi" },
+    { name: "TikTok", url: "https://www.tiktok.com/@mertabi" },
+    { name: "Instagram", url: "https://www.instagram.com/mertabimert" },
+    { name: "Facebook", url: "https://www.facebook.com/mertsketches" },
+  ],
+} as const;
+
+export type Social = (typeof site.socials)[number];

@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+import VideoEmbed from "../components/VideoEmbed.astro";
+import { site } from "../data/site";
+import { getLatestVideos } from "../lib/youtube";
+
+const videos = await getLatestVideos(20);
+---
+
+<Base title={`Video's — ${site.name}`} description="De laatste video's van Mertabi op YouTube.">
+  <section class="page-intro">
+    <h1>Video’s</h1>
+    <p>Zin in nog meer? Hier zijn de laatste video’s, klaar om te kijken.</p>
+  </section>
+
+  {
+    videos.length ? (
+      <section class="video-grid" aria-label="Laatste video's">
+        {videos.map((video) => (
+          <article class="video-card">
+            <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} showTitle={false} />
+            <h2>{video.title}</h2>
+          </article>
+        ))}
+      </section>
+    ) : (
+      <p class="empty-state">
+        Geen video’s kunnen ophalen. Alles staat op{" "}
+        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">
+          youtube.com/mertabi
+        </a>
+        .
+      </p>
+    )
+  }
+</Base>

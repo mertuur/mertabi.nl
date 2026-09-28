@@ -1,0 +1,23 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  includeYoutube?: boolean;
+}
+
+const { includeYoutube = true } = Astro.props;
+const links = includeYoutube
+  ? site.socials
+  : site.socials.filter((social) => social.name !== "YouTube");
+---
+
+<div class="social-list">
+  {
+    links.map((social) => (
+      <a class="social-link" href={social.url} target="_blank" rel="noopener noreferrer">
+        {social.name}
+        <span>Openen</span>
+      </a>
+    ))
+  }
+</div>
