@@ -1,0 +1,22 @@
+---
+interface Props {
+  href?: string;
+  label?: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+{
+  href ? (
+    <p class="transition">
+      <a href={href}>Knip naar: {label} →</a>
+    </p>
+  ) : (
+    <>
+      <p class="transition">Fade out.</p>
+      <p class="the-end">Einde</p>
+      <p class="copyright">© {new Date().getFullYear()} Mertabi</p>
+    </>
+  )
+}

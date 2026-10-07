@@ -5,9 +5,10 @@ import { site } from "../data/site";
 interface Props {
   title: string;
   description: string;
+  page: number;
 }
 
-const { title, description } = Astro.props;
+const { title, description, page } = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 ---
 
@@ -21,17 +22,20 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat+Brush&family=Caveat:wght@600&display=swap"
       rel="stylesheet"
     />
     <title>{title}</title>
   </head>
   <body>
-    <header class="site-header">
+    <header class="desk-top">
       <a class="logo" href="/" aria-label={site.name}>
         <img src="/logo.png" alt="" />
       </a>
-      <nav class="nav" aria-label="Hoofdmenu">
+    </header>
+
+    <div class="script">
+      <nav class="tabs" aria-label="Hoofdmenu">
         {
           site.nav.map((item) => (
             <a
@@ -43,14 +47,12 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
           ))
         }
       </nav>
-    </header>
 
-    <main class="site-main">
-      <slot />
-    </main>
-
-    <footer class="site-footer">
-      <p>© {new Date().getFullYear()} {site.name}</p>
-    </footer>
+      <main class="sheet">
+        <span class="draft">Versie 3 — definitief (echt)</span>
+        <span class="page-no">{page}.</span>
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

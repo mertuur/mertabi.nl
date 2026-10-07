@@ -1,0 +1,16 @@
+---
+// Rode-pen aantekening in de kantlijn. `rotate` in graden, `lift` schuift hem omhoog naast de vorige regel.
+// `pointing` zet er een pijl voor die naar de tekst wijst (links op desktop, omhoog op mobiel).
+interface Props {
+  rotate?: number;
+  lift?: string;
+  pointing?: boolean;
+}
+
+const { rotate = -4, lift = "0rem", pointing = false } = Astro.props;
+---
+
+<span
+  class:list={["note", { pointing }]}
+  aria-hidden="true"
+  style={`--r:${rotate}deg; --lift:${lift}`}><slot /></span>

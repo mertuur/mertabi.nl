@@ -1,0 +1,14 @@
+---
+interface Props {
+  who?: string;
+  paren?: string;
+}
+
+const { who = "Mertabi", paren } = Astro.props;
+---
+
+<p class="dialogue">
+  <span class="who">{who}</span>
+  {paren && <span class="paren">({paren})</span>}
+  <span class="line"><slot /></span>
+</p>

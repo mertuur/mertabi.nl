@@ -3,33 +3,55 @@ interface Props {
   id: string;
   title: string;
   thumbnail?: string;
-  showTitle?: boolean;
+  scene: number;
 }
 
-const { id, title, thumbnail, showTitle = true } = Astro.props;
+const { id, title, thumbnail, scene } = Astro.props;
 const image = thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const caption = title.replace(/#\S+/g, "").replace(/\|\s*Mertabi Sketch/i, "").trim() || title;
 ---
 
-<div class="video-wrap">
-  <button class="video-facade" type="button" data-youtube-id={id} aria-label={`Speel ${title}`}>
-    <img src={image} alt="" loading="lazy" />
-    <span class="play" aria-hidden="true"></span>
-    {showTitle && <span class="video-title">{title}</span>}
-  </button>
-</div>
+<figure class="polaroid">
+  <div class="frame">
+    <button
+      class="video-facade"
+      type="button"
+      data-youtube-id={id}
+      data-scene={scene}
+      aria-label={`Speel ${caption}`}
+    >
+      <img src={image} alt="" loading="lazy" />
+      <span class="go" aria-hidden="true">▶ Actie!</span>
+    </button>
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
 
 <script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   function playVideo(button: HTMLButtonElement) {
     const id = button.dataset.youtubeId;
-    if (!id) return;
+    const frame = button.parentElement;
+    if (!id || !frame) return;
 
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
-    iframe.title = button.getAttribute("aria-label") ?? "YouTube video";
-    iframe.allow =
-      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-    iframe.allowFullscreen = true;
-    button.replaceWith(iframe);
+    button.disabled = true;
+    button.querySelector(".go")?.remove();
+
+    const clapper = document.createElement("div");
+    clapper.className = "clapper";
+    clapper.innerHTML = `<div class="stick"></div><div class="slate">Mertabi<br>Scène ${button.dataset.scene} · Take 1</div>`;
+    frame.appendChild(clapper);
+
+    window.setTimeout(() => {
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+      iframe.title = button.getAttribute("aria-label") ?? "YouTube video";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      frame.replaceChildren(iframe);
+    }, reduceMotion ? 0 : 750);
   }
 
   document.querySelectorAll<HTMLButtonElement>("[data-youtube-id]").forEach((button) => {

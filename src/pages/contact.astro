@@ -1,27 +1,28 @@
 ---
 import Base from "../layouts/Base.astro";
 import SocialLinks from "../components/SocialLinks.astro";
+import Dialogue from "../components/Dialogue.astro";
+import Note from "../components/Note.astro";
+import CutTo from "../components/CutTo.astro";
 import { site } from "../data/site";
 ---
 
 <Base
   title={`Contact — ${site.name}`}
   description="Mail Mertabi of kom langs op social media."
+  page={4}
 >
-  <section class="page-intro">
-    <h1>Contact</h1>
-  </section>
+  <h1 class="slug">Scène 4. Int. kantoortje – avond</h1>
+  <p class="action">Het is stil. Er gaat een telefoon over. MERTABI neemt op.</p>
 
-  <section class="mail-block">
-    <h2>Mail</h2>
-    <a class="mail-link" href={`mailto:${site.email}`}>
-      {site.email}
-      <span>Stuur een mail</span>
-    </a>
-  </section>
+  <Dialogue paren="fluistert">
+    Niet bellen. Gewoon mailen:<br />
+    <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+  </Dialogue>
+  <Note rotate={-5} lift="3.4rem" pointing>klik hier!</Note>
 
-  <section class="mail-block">
-    <h2>Social media</h2>
-    <SocialLinks />
-  </section>
+  <Dialogue who="Mertabi (V.O.)">Of zoek me op social media.</Dialogue>
+  <SocialLinks />
+
+  <CutTo />
 </Base>

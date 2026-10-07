@@ -1,35 +1,50 @@
 ---
 import Base from "../layouts/Base.astro";
 import VideoEmbed from "../components/VideoEmbed.astro";
+import Dialogue from "../components/Dialogue.astro";
+import Note from "../components/Note.astro";
+import CutTo from "../components/CutTo.astro";
 import { site } from "../data/site";
 import { getLatestVideos } from "../lib/youtube";
 
 const videos = await getLatestVideos(3);
 ---
 
-<Base title={`${site.name} — sketches`} description={site.tagline}>
-  <section class="page-intro">
-    <h1>Leuk dat je er bent.</h1>
-    <p>Check hier de nieuwste Mertabi sketches</p>
-  </section>
+<Base title={`${site.name} — sketches`} description={site.tagline} page={1}>
+  <div class="title-block">
+    <h1>MERTABI.NL</h1>
+    <p>een sketch in vier scènes</p>
+    <p>geschreven door<span class="signature">Mertabi</span></p>
+  </div>
+
+  <h2 class="slug">Scène 1. Int. homepage – dag</h2>
+  <p class="action">Een bezoeker komt binnen. MERTABI kijkt op van een stapel scripts.</p>
+
+  <Dialogue>Leuk dat je er bent.</Dialogue>
+  <Note rotate={-6} lift="5.2rem" pointing>nog warmer zeggen?</Note>
+
+  <Dialogue paren="wijst naar de muur">Check hier de nieuwste Mertabi sketches</Dialogue>
 
   {
     videos.length ? (
-      <section class="video-stack" aria-label="Nieuwste sketches">
-        {videos.map((video) => (
-          <article class="video-card">
-            <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} />
+      <section aria-label="Nieuwste sketches">
+        {videos.map((video, i) => (
+          <article class="insert">
+            <h3 class="label">
+              Insert — sketch #{i + 1}
+              {i === 0 && <span class="circled">nieuw!</span>}
+            </h3>
+            <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} scene={1} />
           </article>
         ))}
       </section>
     ) : (
-      <p class="empty-state">
-        De video’s laden even niet. Kijk intussen op{" "}
-        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">
-          YouTube
-        </a>
-        .
+      <p class="action">
+        (De banden zijn even zoek. Kijk intussen op{" "}
+        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">YouTube</a>.)
       </p>
     )
   }
+
+  <CutTo href="/videos" label="Video’s" />
 </Base>
