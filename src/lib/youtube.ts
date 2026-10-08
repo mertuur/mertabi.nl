@@ -50,43 +50,56 @@ export async function getChannelViews(): Promise<number | null> {
   }
 }
 
+// Haalt uploads op in pagina's van 50, tot `limit` of tot de laatste pagina.
 async function fetchFromApi(apiKey: string, limit: number): Promise<YoutubeVideo[]> {
-  const url = new URL("https://www.googleapis.com/youtube/v3/playlistItems");
-  url.searchParams.set("part", "snippet");
-  url.searchParams.set("maxResults", String(Math.min(limit, 50)));
-  url.searchParams.set("playlistId", UPLOADS_PLAYLIST);
-  url.searchParams.set("key", apiKey);
+  const videos: YoutubeVideo[] = [];
+  let pageToken = "";
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`YouTube API ${response.status}`);
-  }
+  do {
+    const url = new URL("https://www.googleapis.com/youtube/v3/playlistItems");
+    url.searchParams.set("part", "snippet");
+    url.searchParams.set("maxResults", String(Math.min(limit - videos.length, 50)));
+    url.searchParams.set("playlistId", UPLOADS_PLAYLIST);
+    url.searchParams.set("key", apiKey);
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
 
-  const data = (await response.json()) as {
-    items?: Array<{
-      snippet?: {
-        title?: string;
-        publishedAt?: string;
-        resourceId?: { videoId?: string };
-        thumbnails?: { high?: { url?: string }; medium?: { url?: string } };
-      };
-    }>;
-  };
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`YouTube API ${response.status}`);
+    }
 
-  return (data.items ?? [])
-    .map((item) => {
+    const data = (await response.json()) as {
+      nextPageToken?: string;
+      items?: Array<{
+        snippet?: {
+          title?: string;
+          publishedAt?: string;
+          resourceId?: { videoId?: string };
+          thumbnails?: { high?: { url?: string }; medium?: { url?: string } };
+        };
+      }>;
+    };
+
+    for (const item of data.items ?? []) {
       const id = item.snippet?.resourceId?.videoId ?? "";
-      return {
+      const title = item.snippet?.title ?? "Video";
+      // Verwijderde of privévideo's staan nog in de uploadlijst; die slaan we over.
+      if (!id || title === "Deleted video" || title === "Private video") continue;
+      videos.push({
         id,
-        title: item.snippet?.title ?? "Video",
+        title,
         published: item.snippet?.publishedAt ?? "",
         thumbnail:
           item.snippet?.thumbnails?.high?.url ??
           item.snippet?.thumbnails?.medium?.url ??
           thumbnailFor(id),
-      };
-    })
-    .filter((video) => video.id);
+      });
+    }
+
+    pageToken = data.nextPageToken ?? "";
+  } while (pageToken && videos.length < limit);
+
+  return videos;
 }
 
 async function fetchFromRss(): Promise<YoutubeVideo[]> {

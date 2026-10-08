@@ -489,3 +489,17 @@ iframe {
 .cell p.stars {
   font-size: 11px;
 }
+
+.more {
+  padding: 6px 8px 10px;
+  text-align: center;
+}
+
+.more button {
+  padding: 2px 12px;
+  font: bold 12px Arial, sans-serif;
+  background: linear-gradient(#fff, #ddd);
+  border: 1px solid #999;
+  border-radius: 3px;
+  cursor: pointer;
+}

@@ -5,7 +5,8 @@ import VideoItem from "../components/VideoItem.astro";
 import { site } from "../data/site";
 import { getLatestVideos } from "../lib/youtube";
 
-const videos = await getLatestVideos(20);
+// Alle uploads (met API-key); zonder key geeft de RSS-feed er maximaal 15.
+const videos = await getLatestVideos(500);
 ---
 
 <Base title={`Video's — ${site.name}`} description="De laatste video's van Mertabi op YouTube.">
@@ -26,6 +27,9 @@ const videos = await getLatestVideos(20);
               <VideoItem video={video} variant="cell" />
             ))}
           </div>
+          <div class="more" id="more" hidden>
+            <button type="button">Meer video’s laden…</button>
+          </div>
           <p class="inner" id="no-results" hidden>
             Geen sketches gevonden. Probeer een ander woord, of bekijk <a href="/videos">alle video’s</a>.
           </p>
@@ -41,20 +45,43 @@ const videos = await getLatestVideos(20);
 </Base>
 
 <script>
-  // Zoekbalk: /videos?q=osman filtert het raster.
-  const query = new URLSearchParams(location.search).get("q")?.trim().toLowerCase();
+  // Zoeken (/videos?q=osman) en oneindig scrollen: telkens 20 video's erbij zodra je onderaan bent.
+  const BATCH = 20;
+  const query = new URLSearchParams(location.search).get("q")?.trim().toLowerCase() ?? "";
+  const cells = [...document.querySelectorAll<HTMLElement>("#video-grid .cell")];
+  const matches = cells.filter((cell) => (cell.dataset.search ?? "").includes(query));
+  cells.forEach((cell) => (cell.hidden = true));
+
   if (query) {
-    const cells = document.querySelectorAll<HTMLElement>("#video-grid .cell");
-    let shown = 0;
-    cells.forEach((cell) => {
-      const match = (cell.dataset.search ?? "").includes(query);
-      cell.hidden = !match;
-      if (match) shown++;
-    });
     document.getElementById("videos-heading")!.textContent = `Zoekresultaten voor "${query}"`;
-    document.getElementById("videos-count")!.textContent = `${shown} video’s`;
-    document.getElementById("no-results")!.hidden = shown > 0;
+    document.getElementById("no-results")!.hidden = matches.length > 0;
     const input = document.querySelector<HTMLInputElement>(".searchbar input");
     if (input) input.value = query;
   }
+  document.getElementById("videos-count")!.textContent = `${matches.length} video’s`;
+
+  const more = document.getElementById("more")!;
+  let shown = 0;
+  function showMore() {
+    matches.slice(shown, shown + BATCH).forEach((cell) => (cell.hidden = false));
+    shown = Math.min(shown + BATCH, matches.length);
+    more.hidden = shown >= matches.length;
+    if (more.hidden) observer.disconnect();
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      showMore();
+      // Opnieuw waarnemen, zodat er nog een rij bijkomt als het einde nog steeds in beeld is.
+      if (!more.hidden) {
+        observer.unobserve(more);
+        observer.observe(more);
+      }
+    },
+    { rootMargin: "400px" },
+  );
+  more.querySelector("button")!.addEventListener("click", showMore);
+  showMore();
+  if (!more.hidden) observer.observe(more);
 </script>
