@@ -7,6 +7,8 @@ export const site = {
     handle: "mertabi",
     channelId: "UCrVPdFrjQ4MJOAKmJX81IJg",
     url: "https://www.youtube.com/@mertabi",
+    // Totaal kanaalweergaven voor de bezoekersteller, gebruikt zolang er geen YOUTUBE_API_KEY is.
+    totalViews: 183_429_596,
   },
   nav: [
     { href: "/", label: "Home" },

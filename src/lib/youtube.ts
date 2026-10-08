@@ -25,6 +25,31 @@ export async function getLatestVideos(limit = 20): Promise<YoutubeVideo[]> {
   return (await fetchFromRss()).slice(0, limit);
 }
 
+/** Totaal aantal weergaven van het kanaal, of null zonder API-key of bij een fout. */
+export async function getChannelViews(): Promise<number | null> {
+  const apiKey = process.env.YOUTUBE_API_KEY?.trim();
+  if (!apiKey) return null;
+
+  try {
+    const url = new URL("https://www.googleapis.com/youtube/v3/channels");
+    url.searchParams.set("part", "statistics");
+    url.searchParams.set("id", CHANNEL_ID);
+    url.searchParams.set("key", apiKey);
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`YouTube API ${response.status}`);
+
+    const data = (await response.json()) as {
+      items?: Array<{ statistics?: { viewCount?: string } }>;
+    };
+    const views = Number(data.items?.[0]?.statistics?.viewCount);
+    return Number.isFinite(views) ? views : null;
+  } catch (error) {
+    console.warn("Kanaalweergaven ophalen mislukt.", error);
+    return null;
+  }
+}
+
 async function fetchFromApi(apiKey: string, limit: number): Promise<YoutubeVideo[]> {
   const url = new URL("https://www.googleapis.com/youtube/v3/playlistItems");
   url.searchParams.set("part", "snippet");
