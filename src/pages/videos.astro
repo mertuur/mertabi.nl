@@ -1,36 +1,60 @@
 ---
 import Base from "../layouts/Base.astro";
-import VideoEmbed from "../components/VideoEmbed.astro";
-import Dialogue from "../components/Dialogue.astro";
-import CutTo from "../components/CutTo.astro";
+import Player from "../components/Player.astro";
+import VideoItem from "../components/VideoItem.astro";
 import { site } from "../data/site";
 import { getLatestVideos } from "../lib/youtube";
 
 const videos = await getLatestVideos(20);
 ---
 
-<Base title={`Video's — ${site.name}`} description="De laatste video's van Mertabi op YouTube." page={2}>
-  <h1 class="slug">
-    Scène 2. Int. <span class="struck">video’s<span class="fix" aria-hidden="true">sketches!!</span></span> – nacht
-  </h1>
-  <p class="action">MERTABI zet een oude computer aan. De computer klinkt alsof die elk moment uit elkaar kan vallen.</p>
+<Base title={`Video's — ${site.name}`} description="De laatste video's van Mertabi op YouTube.">
+  <Player heading="Nu aan het kijken" />
 
-  <Dialogue>Zin in nog meer sketches? Hier kun je er nog een paar checken.</Dialogue>
+  <div class="box">
+    <h2>
+      <span id="videos-heading">Video’s</span>
+      <small id="videos-count">{videos.length} video’s</small>
+    </h2>
+    <div class="inner intro">Zin in nog meer sketches? Hier kun je er nog een paar checken.</div>
 
-  {
-    videos.length ? (
-      <section class="grid" aria-label="Laatste video's">
-        {videos.map((video) => (
-          <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} scene={2} />
-        ))}
-      </section>
-    ) : (
-      <p class="action">
-        (Geen video’s kunnen ophalen. Alles staat op{" "}
-        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">youtube.com/mertabi</a>.)
-      </p>
-    )
-  }
-
-  <CutTo href="/social" label="Social media" />
+    {
+      videos.length ? (
+        <>
+          <div class="grid" id="video-grid">
+            {videos.map((video) => (
+              <VideoItem video={video} variant="cell" />
+            ))}
+          </div>
+          <p class="inner" id="no-results" hidden>
+            Geen sketches gevonden. Probeer een ander woord, of bekijk <a href="/videos">alle video’s</a>.
+          </p>
+        </>
+      ) : (
+        <p class="inner">
+          Geen video’s kunnen ophalen. Alles staat op{" "}
+          <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">youtube.com/mertabi</a>.
+        </p>
+      )
+    }
+  </div>
 </Base>
+
+<script>
+  // Zoekbalk: /videos?q=osman filtert het raster.
+  const query = new URLSearchParams(location.search).get("q")?.trim().toLowerCase();
+  if (query) {
+    const cells = document.querySelectorAll<HTMLElement>("#video-grid .cell");
+    let shown = 0;
+    cells.forEach((cell) => {
+      const match = (cell.dataset.search ?? "").includes(query);
+      cell.hidden = !match;
+      if (match) shown++;
+    });
+    document.getElementById("videos-heading")!.textContent = `Zoekresultaten voor "${query}"`;
+    document.getElementById("videos-count")!.textContent = `${shown} video’s`;
+    document.getElementById("no-results")!.hidden = shown > 0;
+    const input = document.querySelector<HTMLInputElement>(".searchbar input");
+    if (input) input.value = query;
+  }
+</script>

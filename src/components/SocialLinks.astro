@@ -1,23 +1,50 @@
 ---
 import { site } from "../data/site";
 
-// Laatste stukje van de URL, zodat de rolverdeling "@mertabi" toont.
+interface Props {
+  /** "table" voor de social-pagina, "list" voor de zijbalk. */
+  variant?: "table" | "list";
+}
+
+const { variant = "table" } = Astro.props;
+
+// Laatste stukje van de URL, zodat de tabel "@mertabi" toont.
 const handleFor = (url: string) => {
   const last = new URL(url).pathname.split("/").filter(Boolean).pop() ?? "";
   return last.startsWith("@") ? last : `@${last}`;
 };
+const notes: Record<string, string> = { Facebook: "voor je oom" };
+const links = variant === "list" ? site.socials.filter((s) => s.name !== "YouTube") : site.socials;
 ---
 
-<ul class="cast">
-  {
-    site.socials.map((social) => (
-      <li>
-        <a href={social.url} target="_blank" rel="noopener noreferrer">
-          <span class="name">{social.name}</span>
-          <span class="dots" aria-hidden="true" />
-          <span class="handle">{handleFor(social.url)}</span>
-        </a>
-      </li>
-    ))
-  }
-</ul>
+{
+  variant === "list" ? (
+    <ul class="friends">
+      {links.map((social) => (
+        <li>
+          <a href={social.url} target="_blank" rel="noopener noreferrer">
+            {social.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <table class="social-table">
+      <tbody>
+        {links.map((social) => (
+          <tr>
+            <td>
+              <b>{social.name}</b>
+              {notes[social.name] && <span class="muted"> ({notes[social.name]})</span>}
+            </td>
+            <td>
+              <a href={social.url} target="_blank" rel="noopener noreferrer">
+                {handleFor(social.url)}
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}

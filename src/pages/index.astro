@@ -1,52 +1,40 @@
 ---
 import Base from "../layouts/Base.astro";
-import VideoEmbed from "../components/VideoEmbed.astro";
-import Dialogue from "../components/Dialogue.astro";
-import Note from "../components/Note.astro";
-import CutTo from "../components/CutTo.astro";
+import Player from "../components/Player.astro";
+import VideoItem from "../components/VideoItem.astro";
 import { site } from "../data/site";
 import { getLatestVideos } from "../lib/youtube";
 
 const videos = await getLatestVideos(3);
 ---
 
-<Base title={`${site.name} — sketches`} description={site.tagline} page={1}>
-  <div class="title-block">
-    <h1>MERTABI.NL</h1>
-    <p>een bezoeker verdwaalt op mertabi.nl</p>
-    <p>geschreven door<span class="signature">Mertabi</span></p>
+<Base title={`${site.name} — sketches`} description={site.tagline}>
+  <div class="welcome">
+    <strong>Hoi, leuk dat je er bent.</strong><br />
+    Check hier de nieuwste Mertabi sketches. <span class="badge">NIEUW!</span>
   </div>
-
-  <h2 class="slug">Scène 1. Int. homepage – dag</h2>
-  <p class="action">Een bezoeker komt binnen. MERTABI kijkt op van een stapel scripts.</p>
-
-  <Dialogue>Hoi, leuk dat je er bent.</Dialogue>
-  <Note rotate={-6} lift="5.2rem" pointing>nog enthousiaster hallo zeggen?</Note>
-
-  <Dialogue who="Bezoeker">Hoi, ik kwam even rondkijken op mertabi.nl</Dialogue>
-
-  <Dialogue paren="wijst naar de video’s hieronder">Oh leuk. Check hier de nieuwste Mertabi sketches</Dialogue>
 
   {
     videos.length ? (
-      <section aria-label="Nieuwste sketches">
-        {videos.map((video, i) => (
-          <article class="insert">
-            <h3 class="label">
-              Insert — sketch #{i + 1}
-              {i === 0 && <span class="circled">nieuw!</span>}
-            </h3>
-            <VideoEmbed id={video.id} title={video.title} thumbnail={video.thumbnail} scene={1} />
-          </article>
-        ))}
-      </section>
+      <>
+        <Player heading="Uitgelichte video" video={videos[0]}>
+          <small slot="extra"><a href="/videos">Alle video’s »</a></small>
+        </Player>
+
+        <div class="box">
+          <h2>
+            Nieuwste sketches <small>pagina 1 van 1</small>
+          </h2>
+          {videos.map((video) => (
+            <VideoItem video={video} />
+          ))}
+        </div>
+      </>
     ) : (
-      <p class="action">
-        (De banden zijn even zoek. Kijk intussen op{" "}
-        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">YouTube</a>.)
+      <p class="notice">
+        De video’s laden even niet. Kijk intussen op{" "}
+        <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">YouTube</a>.
       </p>
     )
   }
-
-  <CutTo href="/videos" label="videos" />
 </Base>

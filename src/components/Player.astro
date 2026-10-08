@@ -1,0 +1,66 @@
+---
+import { cleanTitle } from "../lib/video";
+import type { YoutubeVideo } from "../lib/youtube";
+
+interface Props {
+  heading: string;
+  /** Video die klaarstaat in de speler. Zonder video blijft de speler verborgen tot er iets wordt aangeklikt. */
+  video?: YoutubeVideo;
+}
+
+const { heading, video } = Astro.props;
+---
+
+<div class="box player-box" hidden={!video}>
+  <h2>{heading}<slot name="extra" /></h2>
+  <div class="player" id="player">
+    {
+      video && (
+        <button
+          class="player-facade"
+          type="button"
+          data-play-id={video.id}
+          data-play-title={cleanTitle(video.title)}
+          aria-label={`Speel ${cleanTitle(video.title)}`}
+        >
+          <img src={video.thumbnail} alt="" />
+          <span class="big-play" aria-hidden="true">▶</span>
+        </button>
+      )
+    }
+  </div>
+  <div class="player-bar">
+    <span id="player-title">{video ? cleanTitle(video.title) : ""}</span>
+    <a id="player-yt" href={video ? `https://www.youtube.com/watch?v=${video.id}` : "#"} target="_blank" rel="noopener noreferrer"
+      >Bekijk op YouTube</a
+    >
+  </div>
+</div>
+
+<script>
+  // Elke thumbnail of titel met data-play-id speelt af in de speler bovenaan de pagina.
+  document.addEventListener("click", (event) => {
+    const trigger = (event.target as Element).closest<HTMLElement>("[data-play-id]");
+    const player = document.getElementById("player");
+    if (!trigger || !player) return;
+    event.preventDefault();
+
+    const id = trigger.dataset.playId!;
+    const title = trigger.dataset.playTitle ?? "YouTube video";
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`;
+    iframe.title = title;
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    player.replaceChildren(iframe);
+
+    const box = player.closest<HTMLElement>(".player-box")!;
+    box.hidden = false;
+    document.getElementById("player-title")!.textContent = title;
+    (document.getElementById("player-yt") as HTMLAnchorElement).href = `https://www.youtube.com/watch?v=${id}`;
+    if (!trigger.classList.contains("player-facade")) {
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+</script>

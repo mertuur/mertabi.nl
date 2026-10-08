@@ -1,0 +1,61 @@
+---
+import { site } from "../data/site";
+import { cleanTitle, formatDate, starsFor, tagsFrom } from "../lib/video";
+import type { YoutubeVideo } from "../lib/youtube";
+
+interface Props {
+  video: YoutubeVideo;
+  /** "row" = lijstje met details (home), "cell" = tegel in het raster (video's). */
+  variant?: "row" | "cell";
+}
+
+const { video, variant = "row" } = Astro.props;
+const title = cleanTitle(video.title);
+const added = formatDate(video.published);
+const stars = starsFor(video.id);
+const play = { "data-play-id": video.id, "data-play-title": title };
+---
+
+{
+  variant === "row" ? (
+    <div class="vid">
+      <a class="thumb" href={`https://www.youtube.com/watch?v=${video.id}`} aria-label={`Speel ${title}`} {...play}>
+        <img src={video.thumbnail} alt="" loading="lazy" />
+      </a>
+      <div class="meta">
+        <a class="t" href={`https://www.youtube.com/watch?v=${video.id}`} {...play}>
+          {title}
+        </a>
+        {added && (
+          <p>
+            <b>Toegevoegd:</b>{" "}{added}
+          </p>
+        )}
+        <p>
+          <b>Van:</b>{" "}
+          <a href={site.youtube.url} target="_blank" rel="noopener noreferrer">
+            {site.youtube.handle}
+          </a>
+        </p>
+        <p class="stars" aria-hidden="true">{stars}</p>
+        <p class="tags">
+          <b>Tags:</b>{" "}
+          {tagsFrom(video.title).map((tag) => (
+            <a href={`/videos?q=${encodeURIComponent(tag)}`}>{tag}</a>
+          ))}
+        </p>
+      </div>
+    </div>
+  ) : (
+    <div class="cell" data-search={`${title} ${tagsFrom(video.title).join(" ")}`.toLowerCase()}>
+      <a class="thumb" href={`https://www.youtube.com/watch?v=${video.id}`} aria-label={`Speel ${title}`} {...play}>
+        <img src={video.thumbnail} alt="" loading="lazy" />
+      </a>
+      <a class="t" href={`https://www.youtube.com/watch?v=${video.id}`} {...play}>
+        {title}
+      </a>
+      {added && <p>{added}</p>}
+      <p class="stars" aria-hidden="true">{stars}</p>
+    </div>
+  )
+}

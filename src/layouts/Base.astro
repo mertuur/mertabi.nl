@@ -1,14 +1,14 @@
 ---
 import "../styles/global.css";
 import { site } from "../data/site";
+import SocialLinks from "../components/SocialLinks.astro";
 
 interface Props {
   title: string;
   description: string;
-  page: number;
 }
 
-const { title, description, page } = Astro.props;
+const { title, description } = Astro.props;
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 ---
 
@@ -19,40 +19,89 @@ const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat+Brush&family=Caveat:wght@600&display=swap"
-      rel="stylesheet"
-    />
     <title>{title}</title>
   </head>
   <body>
-    <header class="desk-top">
-      <a class="logo" href="/" aria-label={site.name}>
-        <img src="/logo-m.png" alt="" />
-      </a>
-    </header>
+    <div class="wrap">
+      <header class="top">
+        <a class="brand" href="/" aria-label={site.name}>
+          <span class="word">Mer<span class="box">tabi</span></span>
+          <span class="slogan">Broadcast je oom™</span>
+        </a>
+        <div class="account">
+          Hallo, <b>verdwaalde bezoeker</b>! |
+          <a href={`${site.youtube.url}?sub_confirmation=1`} target="_blank" rel="noopener noreferrer">Abonneren</a> |
+          <a href="/contact">Contact</a>
+          <br />
+          <span class="muted">Bezoekersteller:</span> <span class="counter">kapot</span>
+        </div>
+      </header>
 
-    <div class="script">
       <nav class="tabs" aria-label="Hoofdmenu">
         {
           site.nav.map((item) => (
-            <a
-              href={item.href}
-              aria-current={currentPath === item.href ? "page" : undefined}
-            >
+            <a href={item.href} aria-current={currentPath === item.href ? "page" : undefined}>
               {item.label}
             </a>
           ))
         }
       </nav>
+      <form class="searchbar" action="/videos" method="get" role="search">
+        <input type="search" name="q" placeholder="Zoek in sketches…" aria-label="Zoek in sketches" />
+        <button type="submit">Zoeken</button>
+      </form>
 
-      <main class="sheet">
-        <span class="draft">Versie 3 — definitief (echt)</span>
-        <span class="page-no">{page}.</span>
-        <slot />
-      </main>
+      <div class="layout">
+        <main>
+          <slot />
+        </main>
+
+        <aside class="side">
+          <div class="box">
+            <h2>Kanaal</h2>
+            <div class="inner profile">
+              <div class="avatar"><img src="/logo-m.png" alt="" /></div>
+              <div>
+                <a href={site.youtube.url} target="_blank" rel="noopener noreferrer"><b>{site.youtube.handle}</b></a>
+                <br />
+                <span class="muted">{site.tagline}</span>
+                <br />
+                <a
+                  class="btn-sub"
+                  href={`${site.youtube.url}?sub_confirmation=1`}
+                  target="_blank"
+                  rel="noopener noreferrer">Abonneren</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Vrienden</h2>
+            <div class="inner">
+              <SocialLinks variant="list" />
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Contact</h2>
+            <div class="inner"><a href={`mailto:${site.email}`}>{site.email}</a></div>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="site-footer">
+        {
+          site.nav.map((item, i) => (
+            <>
+              {i > 0 && " | "}
+              <a href={item.href}>{item.label}</a>
+            </>
+          ))
+        }
+        <br />
+        Copyright © {new Date().getFullYear()} {site.name}. Beste weergave in 1024×768.
+      </footer>
     </div>
   </body>
 </html>
