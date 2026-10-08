@@ -9,14 +9,14 @@ import { getLatestVideos } from "../lib/youtube";
 const videos = await getLatestVideos(500);
 ---
 
-<Base title={`Video's — ${site.name}`} description="De laatste video's van Mertabi op YouTube.">
+<Base title={`Video's | ${site.name}`} description="Alle comedy sketches van Mertabi op één plek. Zoek en kijk alle video's van het YouTube-kanaal.">
   <Player heading="Nu aan het kijken" />
 
   <div class="box">
-    <h2>
-      <span id="videos-heading">Video’s</span>
+    <h1>
+      <span id="videos-heading">Alle Mertabi video’s</span>
       <small id="videos-count">{videos.length} video’s</small>
-    </h2>
+    </h1>
     <div class="inner intro">Zin in nog meer sketches? Hier kun je er nog een paar checken.</div>
 
     {

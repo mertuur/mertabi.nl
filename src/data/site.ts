@@ -3,6 +3,8 @@ export const site = {
   url: "https://mertabi.nl",
   email: "mail@mertabi.nl",
   tagline: "Comedy sketches, vers van YouTube.",
+  description:
+    "Mertabi maakt Nederlandse comedy sketches. Bekijk de nieuwste sketches en alle video's van het YouTube-kanaal.",
   youtube: {
     handle: "mertabi",
     channelId: "UCrVPdFrjQ4MJOAKmJX81IJg",

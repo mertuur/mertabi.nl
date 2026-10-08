@@ -4,11 +4,26 @@ import Player from "../components/Player.astro";
 import VideoItem from "../components/VideoItem.astro";
 import { site } from "../data/site";
 import { getLatestVideos } from "../lib/youtube";
+import { cleanTitle } from "../lib/video";
 
 const videos = await getLatestVideos(3);
+
+// Laat Google de nieuwste sketches als video herkennen.
+const videoData = videos.map((video) => ({
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: cleanTitle(video.title),
+  description: `${cleanTitle(video.title)}, een comedy sketch van ${site.name}.`,
+  thumbnailUrl: video.thumbnail,
+  uploadDate: video.published,
+  embedUrl: `https://www.youtube.com/embed/${video.id}`,
+  url: `https://www.youtube.com/watch?v=${video.id}`,
+  author: { "@id": `${site.url}/#mertabi` },
+}));
 ---
 
-<Base title={`${site.name} — sketches`} description={site.tagline}>
+<Base title={`${site.name} | Nederlandse comedy sketches`} description={site.description}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(videoData)} />
   <div class="welcome">
     <strong>Hoi, leuk dat je er bent.</strong><br />
     Check hier de nieuwste Mertabi sketches. <span class="badge">NIEUW!</span>
@@ -22,9 +37,9 @@ const videos = await getLatestVideos(3);
         </Player>
 
         <div class="box">
-          <h2>
-            Nieuwste sketches <small>pagina 1 van 1</small>
-          </h2>
+          <h1>
+            Nieuwste Mertabi sketches <small>pagina 1 van 1</small>
+          </h1>
           {videos.map((video) => (
             <VideoItem video={video} />
           ))}

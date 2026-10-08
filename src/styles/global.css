@@ -1,4 +1,4 @@
-/* Mertabi — YouTube 2006-stijl */
+/* Mertabi, YouTube 2006-stijl */
 
 :root {
   --link: #0033cc;
@@ -186,6 +186,7 @@ iframe {
   border: 1px solid var(--box-line);
 }
 
+.box h1,
 .box h2 {
   display: flex;
   justify-content: space-between;
@@ -199,6 +200,7 @@ iframe {
   border-bottom: 1px solid var(--box-line);
 }
 
+.box h1 small,
 .box h2 small {
   font-size: 11px;
   font-weight: normal;
