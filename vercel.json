@@ -1,15 +1,15 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.mertabi.nl" }],
-      "destination": "https://mertabi.nl/:path*",
+      "destination": "https://mertabi.nl/$1",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "mertabi.vercel.app" }],
-      "destination": "https://mertabi.nl/:path*",
+      "destination": "https://mertabi.nl/$1",
       "permanent": true
     }
   ]
